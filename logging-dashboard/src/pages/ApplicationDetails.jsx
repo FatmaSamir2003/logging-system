@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import API from "../api";
@@ -29,13 +29,25 @@ function ApplicationDetails() {
         },
       });
 
+      console.log(response.data);
+
       setLogs(response.data.logs);
       setTotal(response.data.total);
     } catch (error) {
       console.log("API ERROR:", error.response?.data || error.message);
+
       alert("Error fetching logs");
     }
   };
+
+  // =========================
+  // AUTO FETCH
+  // =========================
+  useEffect(() => {
+    // schedule fetchLogs in a microtask to avoid setting state synchronously within the effect
+    Promise.resolve().then(() => fetchLogs());
+  }, [page, level]);
+
   return (
     <div className="logs-page">
       <h2>Application: {name}</h2>
@@ -78,15 +90,25 @@ function ApplicationDetails() {
         </thead>
 
         <tbody>
-          {logs.map((log) => (
-            <tr key={log._id}>
-              <td>{log.message}</td>
-              <td>{log.level}</td>
-              <td>{log.count}</td>
-              <td>{new Date(log.createdAt).toLocaleString()}</td>
-              <td>{new Date(log.updatedAt).toLocaleString()}</td>
+          {logs.length > 0 ? (
+            logs.map((log) => (
+              <tr key={log._id}>
+                <td>{log.message}</td>
+
+                <td>{log.level}</td>
+
+                <td>{log.count}</td>
+
+                <td>{new Date(log.createdAt).toLocaleString()}</td>
+
+                <td>{new Date(log.updatedAt).toLocaleString()}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">No logs found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 

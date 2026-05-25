@@ -1,15 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-
 import API from "../api";
 
 function Dashboard() {
   const navigate = useNavigate();
 
   const [apps, setApps] = useState([]);
-
   const [apiKey, setApiKey] = useState("");
-
   const [appName, setAppName] = useState("");
 
   // =========================
@@ -19,18 +16,14 @@ function Dashboard() {
     try {
       // profile
       const profileResponse = await API.get("/api/users/profile");
-
       setApiKey(profileResponse.data.apiKey);
 
       // applications
       const appsResponse = await API.get("/api/applications");
-
       setApps(appsResponse.data.apps);
     } catch (error) {
       console.log(error);
-
       alert("Unauthorized");
-
       navigate("/");
     }
   }, [navigate]);
@@ -45,13 +38,10 @@ function Dashboard() {
       });
 
       alert(response.data.message);
-
       setAppName("");
-
       fetchData();
     } catch (error) {
       console.log(error);
-
       alert(error.response?.data?.message);
     }
   };
@@ -62,28 +52,16 @@ function Dashboard() {
   const deleteApp = async (name) => {
     try {
       const confirmDelete = window.confirm("Delete this application?");
-
       if (!confirmDelete) return;
 
       const response = await API.delete(`/api/applications/${name}`);
 
       alert(response.data.message);
-
       fetchData();
     } catch (error) {
       console.log(error);
-
       alert(error.response?.data?.message);
     }
-  };
-
-  // =========================
-  // LOGOUT
-  // =========================
-  const logout = () => {
-    localStorage.removeItem("token");
-
-    navigate("/");
   };
 
   useEffect(() => {
@@ -97,14 +75,11 @@ function Dashboard() {
       {/* HEADER */}
       <div className="dashboard-header">
         <h1>Developer Dashboard</h1>
-
-        <button onClick={logout}>Logout</button>
       </div>
 
       {/* API KEY */}
       <div className="api-box">
         <h3>Your API Key</h3>
-
         <p>{apiKey}</p>
       </div>
 

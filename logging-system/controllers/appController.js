@@ -2,7 +2,7 @@ const Application = require("../models/Application");
 const Log = require("../models/Log");
 
 // ==========================================
-// 1. إنشاء تطبيق جديد (Create Application)
+// (Create Application)
 // ==========================================
 const createApp = async (req, res) => {
   try {
@@ -10,7 +10,6 @@ const createApp = async (req, res) => {
     if (!name)
       return res.status(400).json({ message: "Application name is required" });
 
-    // منع المسافات (Requirement 1)
     if (/\s/.test(name)) {
       return res
         .status(400)
@@ -29,7 +28,7 @@ const createApp = async (req, res) => {
 };
 
 // ==========================================
-// 2. عرض تطبيقاتي (Get User Applications)
+// (Get User Applications)
 // ==========================================
 const getApps = async (req, res) => {
   try {
@@ -41,7 +40,7 @@ const getApps = async (req, res) => {
 };
 
 // ==========================================
-// 3. حذف تطبيق (Delete Application)
+// (Delete Application)
 // ==========================================
 const deleteApp = async (req, res) => {
   try {
@@ -54,7 +53,7 @@ const deleteApp = async (req, res) => {
     if (!app) return res.status(404).json({ message: "Application not found" });
 
     await Application.deleteOne({ _id: app._id });
-    await Log.deleteMany({ application: app._id }); // حذف اللوجات المرتبطة
+    await Log.deleteMany({ application: app._id });
 
     res.json({ message: "Application and its logs deleted successfully" });
   } catch (error) {
@@ -63,7 +62,7 @@ const deleteApp = async (req, res) => {
 };
 
 // ==========================================
-// 4. إضافة لوج - للـ SDK (Post Log)
+// SDK (Post Log)
 // ==========================================
 const postLog = async (req, res) => {
   try {
@@ -73,7 +72,6 @@ const postLog = async (req, res) => {
 
     const app = await Application.findOne({ name }).populate("developer");
 
-    // التحقق من الملكية والـ API Key (Requirement 3)
     if (!app || app.developer.apiKey !== apiKey) {
       return res
         .status(401)
@@ -104,7 +102,7 @@ const postLog = async (req, res) => {
 };
 
 // ==========================================
-// 5. عرض اللوجات (Search, Filter, Sort, Paginate)
+// (Search, Filter, Sort, Paginate)
 // ==========================================
 const getLogs = async (req, res) => {
   try {
@@ -113,9 +111,9 @@ const getLogs = async (req, res) => {
       page = 1,
       limit = 10,
       level,
-      sortBy = "createdAt", // الترتيب (Requirement 9)
+      sortBy = "createdAt",
       sortOrder = "desc",
-      search, // البحث (Requirement 11)
+      search,
     } = req.query;
 
     const app = await Application.findOne({ name });
@@ -139,7 +137,7 @@ const getLogs = async (req, res) => {
 };
 
 // ==========================================
-// 6. إحصائيات للرسم البياني (Bonus Charts)
+// ( Charts)
 // ==========================================
 const getStats = async (req, res) => {
   try {
@@ -147,7 +145,6 @@ const getStats = async (req, res) => {
     const app = await Application.findOne({ name });
     if (!app) return res.status(404).json({ message: "App not found" });
 
-    // بيانات الـ Pie Chart (نسبة INFO/WARN/ERROR)
     const stats = await Log.aggregate([
       { $match: { application: app._id } },
       { $group: { _id: "$level", value: { $sum: "$count" } } },
@@ -160,11 +157,11 @@ const getStats = async (req, res) => {
 };
 
 // ==========================================
-// 2.5 جلب بيانات تطبيق واحد (Get Single Application)
+//(Get Single Application)
 // ==========================================
 const getSingleApp = async (req, res) => {
   try {
-    const { name } = req.params; // بناخد الاسم من الرابط
+    const { name } = req.params;
     const app = await Application.findOne({
       name,
       developer: req.developer._id,

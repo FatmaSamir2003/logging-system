@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
-// استدعاء الدوال من الـ Controller الجديد
 const {
   createApp,
   getApps,
@@ -13,19 +12,19 @@ const {
   getStats,
 } = require("../controllers/appController");
 
-// روابط التطبيقات
+// routes for applications
 router.post("/", authMiddleware, createApp);
 router.get("/", authMiddleware, getApps);
 router.delete("/:name", authMiddleware, deleteApp);
 
-// روابط اللوجات
+// routes for logs
 router.post("/:name/logs", postLog);
 router.get("/:name/logs", authMiddleware, getLogs);
 
-// رابط الإحصائيات (الـ Bonus)
+// route for statistics
 router.get("/:name/stats", authMiddleware, getStats);
 
-// جلب بيانات تطبيق واحد بالاسم
+// route for fetching a single application by name
 router.get("/:name", authMiddleware, getSingleApp);
 
 module.exports = router;
